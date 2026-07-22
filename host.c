@@ -3,7 +3,7 @@
 int main()
 {
     struct info PASSED_INFO = get_path(); //extracted path of file
-
+    start_tcp();
     
 }
 
