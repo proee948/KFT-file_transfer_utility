@@ -30,8 +30,13 @@ int main()
 
     printf("Connected: %s\n", inet_ntoa(client_addr.sin_addr));
 
-    close(client_fd);
-    close(listen_fd);
+    //PUT RECONSTRUCTION FUNCTION HERE
+    //close(client_fd);
+    //close(listen_fd);
 
     return 0;
+}
+void fetch_and_reconstruct(void)
+{
+    
 }
