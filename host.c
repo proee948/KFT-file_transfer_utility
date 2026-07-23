@@ -4,6 +4,7 @@ int main()
 {
     struct info PASSED_INFO = get_path(); //extracted path of file
     start_tcp();
+    send_file(PASSED_INFO);
     
 }
 
@@ -25,15 +26,18 @@ struct info get_path(void)
 
     int ch;
     char **ptr = &BUFFER; //ptr to dyn all arr BUFFER ptr 
+    int count = 0;
 
-    while( (ch = fgetc(STREAM)) != EOF)
+    while( (ch = fgetc(STREAM)) != EOF && count < 1023)
     {
         **ptr = (char)ch;
         (*ptr)++;
-        
+        count++;
     }
-    strncpy(INFO.path, P, 1023);    
-    printf("BUFFER CONTENTS>>> %s",P);
+    **ptr = '\0';
+    strncpy(INFO.path, P, 1023);
+    INFO.path[1023] = '\0';    
+    //printf("BUFFER CONTENTS>>> %s",P);
     fclose(STREAM);
     free(P);
     return INFO;
@@ -73,4 +77,31 @@ char* extract_ip(void)
     return IP;
 
     pclose(fp);
+}
+void send_file(struct info PATH)
+{
+    printf("%s",PATH.path);
+    int file_descriptor_in = open(PATH.path,O_RDONLY);
+
+    FILE *raw_p = fopen(PATH.path,"rb");
+    char BUF[4096]; //match OS for efficiency
+    size_t ctl;
+
+    ///////////////implement protocol header here//////////
+
+    ///////////////implement protocol header here//////////
+
+    /////////////sends raw bytes of file////////////////
+    while ( (ctl = fread(BUF,sizeof(char),1024,raw_p)) != 0)
+    {
+        send(file_descriptor_in,BUF,ctl,0); 
+        memset(&BUF,0,sizeof(BUF));
+    }
+    close(file_descriptor_in);
+    fclose(raw_p);
+    /////////////sends raw bytes of file////////////////
+
+    /*int ascii = file_descriptor + '0';
+    write(1,&ascii,sizeof(ascii));
+    write(1,"\n",1);*/ 
 }
