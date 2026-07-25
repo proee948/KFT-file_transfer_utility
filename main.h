@@ -19,7 +19,8 @@ struct info{char path[1024];};
 void send_file(struct info);
 struct info get_path(void);
 char* extract_ip(void);
-void start_tcp(void);
+int start_tcp(void);
+
 
 #ifndef RECEIVER_IP
 #define RECEIVER_IP "bullshit" //this should be passed -D "_ip_"
