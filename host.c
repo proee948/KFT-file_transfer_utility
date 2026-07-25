@@ -2,8 +2,7 @@
 
 int main()
 {
-    struct info PASSED_INFO = get_path(); //extracted path of file
-    start_tcp();
+    struct info PASSED_INFO = get_path();
     send_file(PASSED_INFO);
     
 }
@@ -21,7 +20,6 @@ struct info get_path(void)
         return INFO;
     }    
 
-    fseek(STREAM,0,SEEK_SET); //redundant
     char *P = BUFFER;
 
     int ch;
@@ -42,7 +40,7 @@ struct info get_path(void)
     free(P);
     return INFO;
 }
-void start_tcp(void)
+int start_tcp(void)
 {
     int c_sockfd = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -60,48 +58,36 @@ void start_tcp(void)
         exit(EXIT_FAILURE);
     }
     printf("host connected\n");
+    return c_sockfd;
 
-}
-char* extract_ip(void)
-{
-    FILE *fp = popen("hostname -I","r");
-    if (fp == NULL)
-    {
-        printf("popen failed");
-        exit(EXIT_FAILURE);
-    }
-
-    static char IP[MAX_IP_LENGTH];
-    while( (fgets(IP,MAX_IP_LENGTH,fp)) != NULL){;}
-    //printf("%s",IP);  diagnostic//
-    return IP;
-
-    pclose(fp);
 }
 void send_file(struct info PATH)
 {
-    printf("%s",PATH.path);
-    int file_descriptor_in = open(PATH.path,O_RDONLY);
+    int socket_fd = start_tcp();
+    int file_descriptor_in = open(PATH.path,O_RDONLY); //open file
 
-    FILE *raw_p = fopen(PATH.path,"rb");
-    char BUF[4096]; //match OS for efficiency
-    size_t ctl;
+    //metadata//
+    struct stat stat_data; 
+    int check = stat(PATH.path,&stat_data);
+    if(check == -1){perror("stat failed");}
+    //metadata//
+    //send metadata struct//
+    send(socket_fd,&stat_data,sizeof(stat_data),0);
+    //send metadata struct//
 
-    ///////////////implement protocol header here//////////
-
-    ///////////////implement protocol header here//////////
-
-    /////////////sends raw bytes of file////////////////
-    while ( (ctl = fread(BUF,sizeof(char),1024,raw_p)) != 0)
+    //send bytes//
+    ssize_t bytes_returned;
+    off_t offset = 0;
+    off_t *ptt = &offset;
+    while( (bytes_returned = sendfile(socket_fd,file_descriptor_in,ptt,1024)) > 0)
     {
-        send(file_descriptor_in,BUF,ctl,0); 
-        memset(&BUF,0,sizeof(BUF));
+        ;
     }
+    if(bytes_returned == -1)
+        {
+            perror("fail");
+        }
+    close(socket_fd);
     close(file_descriptor_in);
-    fclose(raw_p);
-    /////////////sends raw bytes of file////////////////
-
-    /*int ascii = file_descriptor + '0';
-    write(1,&ascii,sizeof(ascii));
-    write(1,"\n",1);*/ 
+    //send bytes//
 }
