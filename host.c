@@ -2,8 +2,9 @@
 
 int main()
 {
-    struct info PASSED_INFO = get_path();
-    send_file(PASSED_INFO);
+    struct info PASSED_INFO = get_path(); //extracted path of file
+    //send_file(PASSED_INFO);
+    get_name_and_extension(PASSED_INFO);
     
 }
 
@@ -20,6 +21,7 @@ struct info get_path(void)
         return INFO;
     }    
 
+    fseek(STREAM,0,SEEK_SET); //redundant
     char *P = BUFFER;
 
     int ch;
@@ -66,10 +68,13 @@ void send_file(struct info PATH)
     int socket_fd = start_tcp();
     int file_descriptor_in = open(PATH.path,O_RDONLY); //open file
 
+
     //metadata//
     struct stat stat_data; 
     int check = stat(PATH.path,&stat_data);
     if(check == -1){perror("stat failed");}
+
+    ///////////////////////////////////
     //metadata//
     //send metadata struct//
     send(socket_fd,&stat_data,sizeof(stat_data),0);
@@ -90,4 +95,23 @@ void send_file(struct info PATH)
     close(socket_fd);
     close(file_descriptor_in);
     //send bytes//
+}
+char* get_name_and_extension(struct info PATH)
+{
+    char *string;
+    string = strrchr(PATH.path,'/') + 1;   
+    
+    char arr[100] = {'\0'};
+    strcpy(arr,string);
+    char *dot = strrchr(arr,'.');
+    *dot = '\0';
+
+    char* extension = strrchr(string,'.');
+
+    printf("%s\n",extension);
+    printf("%s\n",arr);
+    
+    /////////////////implement struct that will get passed as return type \
+    //make it static so it isnt aborted after function ends
+
 }
