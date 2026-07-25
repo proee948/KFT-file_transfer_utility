@@ -15,7 +15,6 @@ int main()
 
     bind(listen_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
     listen(listen_fd, 10);
-
     printf("Listening...\n");
 
     struct sockaddr_in client_addr;
@@ -28,15 +27,16 @@ int main()
         return 1;
     }
 
-    printf("Connected: %s\n", inet_ntoa(client_addr.sin_addr));
-
-    //PUT RECONSTRUCTION FUNCTION HERE
-    //close(client_fd);
-    //close(listen_fd);
+    close(client_fd);
+    close(listen_fd);
 
     return 0;
 }
-void fetch_and_reconstruct(void)
+void fetch_and_reconstruct(int inc_socket)
 {
-    
+    struct stat received_stat;
+    u_int64_t metadata_size = sizeof(struct stat); //sizeof incoming struct 
+    recv(inc_socket,&received_stat,metadata_size,0);
+
+    //received_stat. fuck this shit
 }
