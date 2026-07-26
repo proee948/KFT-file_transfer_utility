@@ -10,4 +10,5 @@ to fix this a custom structure equivalent of stat needs to be defined,populated 
 this is to be done using `__packed__` compiler attribute.
 testing done on usage of program between x86_64 fedora pc sending to aarch64 raspberry pi terminates with segfault,above
 explanation is the most likely cause.
-[] check once fixed.
+
+- [] check once fixed.
