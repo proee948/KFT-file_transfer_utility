@@ -3,9 +3,10 @@
 int main()
 {
     struct info PASSED_INFO = get_path(); //extracted path of file
-    //send_file(PASSED_INFO);
-    get_name_and_extension(PASSED_INFO);
+    send_file(PASSED_INFO);
     
+    //printf("%s\n",vv123.ext);
+    //printf("%s\n",vv123.name);
 }
 
 struct info get_path(void)
@@ -73,11 +74,12 @@ void send_file(struct info PATH)
     struct stat stat_data; 
     int check = stat(PATH.path,&stat_data);
     if(check == -1){perror("stat failed");}
-
-    ///////////////////////////////////
+    struct name_and_ext parsed_data =  get_name_and_extension(PATH);
     //metadata//
+
     //send metadata struct//
     send(socket_fd,&stat_data,sizeof(stat_data),0);
+    send(socket_fd,&parsed_data,sizeof(parsed_data),0);
     //send metadata struct//
 
     //send bytes//
@@ -96,22 +98,23 @@ void send_file(struct info PATH)
     close(file_descriptor_in);
     //send bytes//
 }
-char* get_name_and_extension(struct info PATH)
+struct name_and_ext get_name_and_extension(struct info PATH)
 {
-    char *string;
-    string = strrchr(PATH.path,'/') + 1;   
+    char *string = strrchr(PATH.path,'/') + 1;   
     
-    char arr[100] = {'\0'};
+    char *arr = malloc(strlen(string) * sizeof(char) + 1); 
     strcpy(arr,string);
     char *dot = strrchr(arr,'.');
     *dot = '\0';
-
     char* extension = strrchr(string,'.');
 
-    printf("%s\n",extension);
-    printf("%s\n",arr);
-    
-    /////////////////implement struct that will get passed as return type \
-    //make it static so it isnt aborted after function ends
+    static struct name_and_ext ext_data;
+    strcpy(ext_data.ext,extension);
+    strcpy(ext_data.name,arr);
 
+    //printf("%s\n",ext_data.ext);
+    //printf("%s\n",ext_data.name);
+
+    free(arr);
+    return ext_data;
 }
