@@ -12,3 +12,5 @@ testing done on usage of program between x86_64 fedora pc sending to aarch64 ras
 explanation is the most likely cause.
 
 - [] check once fixed.
+
+- x86_64 to x86_64 should work (soon to be tested)
