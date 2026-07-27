@@ -13,4 +13,4 @@ explanation is the most likely cause.
 
 - [] check once fixed.
 
-- x86_64 to x86_64 should work (soon to be tested)
+- x86_64 to x86_64 works with no issues (tested by sending files between two x86_64 linux distro PCs
