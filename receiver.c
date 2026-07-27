@@ -35,29 +35,29 @@ int main()
 }
 void fetch_and_reconstruct(int inc_socket)
 {
-    //accept stat//
     struct stat received_stat;
-    u_int64_t metadata_size = sizeof(struct stat); //sizeof incoming struct 
-    recv(inc_socket,&received_stat,metadata_size,0);
-    //accept stat//
+    u_int64_t metadata_size = sizeof(struct stat);
+    recv(inc_socket,&received_stat,metadata_size,0);   
 
-    //accept name and extension//
     struct name_and_ext received_N_E;
     u_int64_t N_E_size = sizeof(struct name_and_ext);
     recv(inc_socket,&received_N_E,N_E_size,0);
-    //accept name and extension//
 
-    //accept bytes//
-    strcat(received_N_E.name,received_N_E.ext); //full name and ext
-    FILE* f = fopen(received_N_E.name,"wb"); //open file with correct name and ext
+    strcat(received_N_E.name,received_N_E.ext);
+    FILE* f = fopen(received_N_E.name,"wb"); /
 
     uint8_t FINAL_BUFFER [1024];
     ssize_t ch = 0;
-
-    while ( (ch = recv(inc_socket,FINAL_BUFFER,1024,0)) > 0 )
+    ssize_t total_size = received_stat.st_size;
+    
+    while ( total_size > 0 )
     {
+        size_t to_read = (total_size > 1024) ? 1024 : total_size;
+        ch = recv(inc_socket,FINAL_BUFFER,to_read,0);
+        if(ch <= 0){break;}
+
         fwrite(FINAL_BUFFER,1,ch,f);
+        total_size -= ch;
     }
     fclose(f);
 }
-
