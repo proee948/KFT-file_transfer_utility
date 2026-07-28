@@ -1,9 +1,14 @@
 # File Path Saver & TCP File Transfer
 
-A minimal drag-and-drop file transfer tool. A PyQt6 GUI captures a dropped file's path, and a C client/server pair transfers that file over a raw TCP socket using zero copy methods like `sendfile()`.
+A minimal drag-and-drop file transfer tool.
+
+# scope
+
+linux only hence `sendfile()`
 
 ## Components
 
+A PyQt6 GUI captures a dropped file's path, and a C client/server pair transfers that file over a raw TCP socket using zero copy methods like `sendfile()`.
 - **`gui.py`** — PyQt6 drop zone. Dropping a file extracts its absolute path
 - **`main.h`** — common header.
 - **`host.c`** — majority of sending and handling logic.
