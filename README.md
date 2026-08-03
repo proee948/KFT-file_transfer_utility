@@ -4,7 +4,7 @@ A minimal drag-and-drop file transfer tool.
 
 # scope
 
-linux only hence `sendfile()`
+linux x86_64 only
 
 ## Components
 
@@ -46,6 +46,7 @@ gcc -DRECEIVER_IP=\"<receiver-ip>\" -o host host.c
 - Port `4444` is hardcoded on both ends.
 - `receiver` handles one connection per run and exits after the transfer completes.
 - x86_64 to x86_64 works with no issues (tested by sending files between two x86_64 linux distro PCs)
+- receiver loops until SIGINT , ctrl+c
 
 # issues
 
