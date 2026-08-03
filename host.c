@@ -2,11 +2,8 @@
 
 int main()
 {
-    struct info PASSED_INFO = get_path(); //extracted path of file
+    struct info PASSED_INFO = get_path();
     send_file(PASSED_INFO);
-    
-    //printf("%s\n",vv123.ext);
-    //printf("%s\n",vv123.name);
 }
 
 struct info get_path(void)
@@ -21,12 +18,10 @@ struct info get_path(void)
         printf("malloc failed");
         return INFO;
     }    
-
-    fseek(STREAM,0,SEEK_SET); //redundant
     char *P = BUFFER;
 
     int ch;
-    char **ptr = &BUFFER; //ptr to dyn all arr BUFFER ptr 
+    char **ptr = &BUFFER;  
     int count = 0;
 
     while( (ch = fgetc(STREAM)) != EOF && count < 1023)
@@ -38,7 +33,6 @@ struct info get_path(void)
     **ptr = '\0';
     strncpy(INFO.path, P, 1023);
     INFO.path[1023] = '\0';    
-    //printf("BUFFER CONTENTS>>> %s",P);
     fclose(STREAM);
     free(P);
     return INFO;
@@ -67,22 +61,16 @@ int start_tcp(void)
 void send_file(struct info PATH)
 {
     int socket_fd = start_tcp();
-    int file_descriptor_in = open(PATH.path,O_RDONLY); //open file
+    int file_descriptor_in = open(PATH.path,O_RDONLY);
 
-
-    //metadata//
     struct stat stat_data; 
     int check = stat(PATH.path,&stat_data);
     if(check == -1){perror("stat failed");}
     struct name_and_ext parsed_data =  get_name_and_extension(PATH);
-    //metadata//
 
-    //send metadata struct//
     send(socket_fd,&stat_data,sizeof(stat_data),0);
     send(socket_fd,&parsed_data,sizeof(parsed_data),0);
-    //send metadata struct//
 
-    //send bytes//
     ssize_t bytes_returned;
     off_t offset = 0;
     off_t *ptt = &offset;
@@ -96,7 +84,6 @@ void send_file(struct info PATH)
         }
     close(socket_fd);
     close(file_descriptor_in);
-    //send bytes//
 }
 struct name_and_ext get_name_and_extension(struct info PATH)
 {
@@ -111,9 +98,6 @@ struct name_and_ext get_name_and_extension(struct info PATH)
     static struct name_and_ext ext_data;
     strcpy(ext_data.ext,extension);
     strcpy(ext_data.name,arr);
-
-    //printf("%s\n",ext_data.ext);
-    //printf("%s\n",ext_data.name);
 
     free(arr);
     return ext_data;
