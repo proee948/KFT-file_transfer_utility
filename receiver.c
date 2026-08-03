@@ -2,8 +2,8 @@
 
 int main()
 {
+    while(1){
     int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
-    
     int opt = 1; 
     setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -23,33 +23,37 @@ int main()
     int client_fd = accept(listen_fd, (struct sockaddr *)&client_addr, &client_len);
     if (client_fd < 0) {
         perror("Error");
+        sleep(5);
         close(listen_fd);
+        sleep(5);
+        printf("sleeping");
         return 1;
     }
     fetch_and_reconstruct(client_fd);
 
     close(client_fd);
     close(listen_fd);
-
+    }
     return 0;
 }
 void fetch_and_reconstruct(int inc_socket)
 {
     struct stat received_stat;
     u_int64_t metadata_size = sizeof(struct stat);
-    recv(inc_socket,&received_stat,metadata_size,0);   
+    recv(inc_socket,&received_stat,metadata_size,0);
 
     struct name_and_ext received_N_E;
     u_int64_t N_E_size = sizeof(struct name_and_ext);
     recv(inc_socket,&received_N_E,N_E_size,0);
 
     strcat(received_N_E.name,received_N_E.ext);
-    FILE* f = fopen(received_N_E.name,"wb"); /
+    FILE* f = fopen(received_N_E.name,"wb"); 
 
     uint8_t FINAL_BUFFER [1024];
     ssize_t ch = 0;
     ssize_t total_size = received_stat.st_size;
     
+
     while ( total_size > 0 )
     {
         size_t to_read = (total_size > 1024) ? 1024 : total_size;
