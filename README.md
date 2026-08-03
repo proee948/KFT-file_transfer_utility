@@ -1,6 +1,6 @@
 # File Path Saver & TCP File Transfer
 
-A minimal drag-and-drop file transfer tool.
+A minimal drag-and-drop local network file transfer tool.
 
 # scope
 
